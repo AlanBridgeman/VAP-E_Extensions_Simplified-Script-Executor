@@ -1,6 +1,8 @@
 import { PythonRunner } from './python/PythonRunner';
 
 async function run(script: string = '__main__.py', repoDir: string = '.', scriptArgs: string[] = []) {
+    console.debug(`Script: ${script}`);
+    console.debug(`Repo Dir: ${repoDir}`);
 
     const uiCallback = (channel: string, ...args: any[]) => {
         console.log(`Channel: ${channel}`);
@@ -26,4 +28,4 @@ async function run(script: string = '__main__.py', repoDir: string = '.', script
         );
 }
 
-run(process.argv.length > 0 ? process.argv[0] : '__main__.py', process.argv.length > 1 ? process.argv[1] : '.', process.argv.length > 2 ? process.argv[2].split(',') : []);
+run(process.argv.length > 2 ? process.argv[2] : '__main__.py', process.argv.length > 3 ? process.argv[3] : '.', process.argv.length > 4 ? process.argv[4].split(',') : []);

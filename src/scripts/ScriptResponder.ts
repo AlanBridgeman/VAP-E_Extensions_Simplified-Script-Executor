@@ -128,6 +128,13 @@ export class ScriptResponder {
      * @param {string} message The message to handle 
      */
     respondToMessage(message: string) {
+        if(message.trim().includes('\n')) {
+            message.trim().split('\n').forEach((msg) => this.respondToMessage(msg));
+            return;
+        }
+        
+        console.debug('Message recieved: ' + message)
+
         // Handle the exiting message (which is the last message sent by the Python script)
         const hasExited = this.handleExitingMessage(message);
 

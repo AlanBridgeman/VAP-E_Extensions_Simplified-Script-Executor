@@ -80,7 +80,9 @@ export class ScriptCommunicator {
         var logicMessages: string[] = [];
 
         // Get the responses
-        const messageResponses = require(path.join('.', 'responses.js'));
+        const messageResponses = require(path.resolve(process.cwd(), '../responses.js'));
+
+        console.log(`Message Responses: ${JSON.stringify(messageResponses)}`)
 
         let interpreter: Interpreter;
         
@@ -88,6 +90,28 @@ export class ScriptCommunicator {
         // we can know that the script execution will be terminated and we can do any needed cleanup
         new Promise(
             (resolve, reject) => {
+                if (this.script.includes(path.sep)) {
+                    // Change directories to the directory above the directory with the script (this is because to call modules you need to give a name which is the directory name)
+                    process.chdir(path.dirname(path.dirname(this.script)))
+
+                    // Debug statement to show the directory after the change
+                    console.debug(`Working Directory: ${process.cwd()}`);
+
+                    // If the path to the python interpreter is relative, particularly with a parent directory indicator (ex. ../), we need to adjust the path
+                    // TODO: Improve this to work more generally (ex. if the path is relative, adjust appropriately based on the change in directory)
+                    if (this.interpreterOptions.pythonPath.includes('..\\') || this.interpreterOptions.pythonPath.includes('../')) {
+                        if (process.platform === 'win32') {
+                            this.interpreterOptions.pythonPath = this.interpreterOptions.pythonPath.replace('..\\', '');
+                        }
+                        else {
+                            this.interpreterOptions.pythonPath = this.interpreterOptions.pythonPath.replace('../', '');
+                        }
+                    }
+
+                    // The script becomes the name of the directory with the script (again, this is to compensate for modules)
+                    this.script = path.dirname(this.script).substring(path.dirname(this.script).lastIndexOf(path.sep) + 1);
+                }
+
                 if(typeof this.streamTransformer !== 'undefined') {
                     interpreter = new InterpreterClass(
                         this.script, 

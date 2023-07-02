@@ -80,11 +80,11 @@ export class PythonRunner extends ScriptRunner  {
         let cmdReturn: SpawnSyncReturns<Buffer>;
         if (process.platform === 'win32') {
             // If it's a Windows machine, then use the `python` command
-            cmdReturn = spawnSync(`python -m venv ${this.getVenvFolder(repoDir)}`, { shell: true });
+            cmdReturn = spawnSync(`python -m venv "${this.getVenvFolder(repoDir)}"`, { shell: true });
         }
         else {
             // Otherwise, use the `python3` command
-            cmdReturn = spawnSync(`python3 -m venv ${this.getVenvFolder(repoDir)}`, { shell: true });
+            cmdReturn = spawnSync(`python3 -m venv "${this.getVenvFolder(repoDir)}"`, { shell: true });
         }
 
         console.debug('Python Virtual Environment (stdout): ' + cmdReturn.stdout.toString());
@@ -101,8 +101,14 @@ export class PythonRunner extends ScriptRunner  {
      * @param repoDir The path to the logic code's folder (where the virtual environment is located)
      */
     private static installCoreDependencies(repoDir: string) {
+        let pipPath;
         // Get the path to the pip executable in the virtual environment
-        const pipPath = path.join(this.getVenvFolder(repoDir), 'bin', 'pip');
+        if (process.platform === 'win32') {
+            pipPath = path.join(this.getVenvFolder(repoDir), 'Scripts', 'pip.exe');
+        }
+        else {
+            pipPath = path.join(this.getVenvFolder(repoDir), 'bin', 'pip');
+        }
         
         // Combine the arguments together into a runnable command on a terminal (using a space as a separator)
         const pipInstallCmd = ['"' + pipPath + '"', 'install', '-r', '"' + path.join(repoDir, 'requirements.txt') + '"'].join(' ');
@@ -111,10 +117,10 @@ export class PythonRunner extends ScriptRunner  {
         // Run the install command
         const { stdout, stderr } = spawnSync(pipInstallCmd, { shell: true });
         
-        console.debug('Pip Install (tdout): ' + stdout.toString());
+        console.debug('Pip Install (stdout): ' + stdout.toString());
        
         if(stderr.toString() !== '') {
-            console.error('Pip Istall (stderr): ' + stderr.toString());
+            console.error('Pip Install (stderr): ' + stderr.toString());
         }
     }
 
@@ -138,12 +144,18 @@ export class PythonRunner extends ScriptRunner  {
         }
         
         // Get the path to the virtual environment's Python executable (needed to use the virtual environment for running Python scripts)
-        const virtualEnvPythonPath = path.join(this.getVenvFolder(repoDir), 'bin', 'python');
+        let virtualEnvPythonPath;
+        if (process.platform === 'win32') {
+            virtualEnvPythonPath = path.join(this.getVenvFolder(repoDir), 'Scripts', 'python.exe');
+        }
+        else {
+            virtualEnvPythonPath = path.join(this.getVenvFolder(repoDir), 'bin', 'python');
+        }
 
         // Setup the script interpreter (PythonShell) options
         const interpreterOptions: PythonShellOptions = {
             mode: 'text',
-            pythonOptions: ['-u', '-m'],  
+            pythonOptions: ['-u'/*, '-m'*/],  
             args: scriptArgs
         };
 
