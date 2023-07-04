@@ -13,7 +13,7 @@ async function run(script: string = '__main__.py', repoDir: string = '.', script
     const pythonRunner = await PythonRunner.createWithVirtualEnv(repoDir, uiCallback, scriptArgs);
 
     var uiArgMap: { [key: string]: unknown } = undefined;
-    if(process.env.includes('UI_ARGUMENTS_MAP')) {
+    if('UI_ARGUMENTS_MAP' in process.env) {
         uiArgMap = JSON.parse(process.env.UI_ARGUMENTS_MAP);
     }
 
