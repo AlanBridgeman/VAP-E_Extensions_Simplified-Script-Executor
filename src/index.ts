@@ -12,8 +12,13 @@ async function run(script: string = '__main__.py', repoDir: string = '.', script
     // Create a new PythonRunner object with a virtual environment (used to run the Python script)
     const pythonRunner = await PythonRunner.createWithVirtualEnv(repoDir, uiCallback, scriptArgs);
 
+    var uiArgMap: { [key: string]: unknown } = undefined;
+    if(process.env.includes('UI_ARGUMENTS_MAP')) {
+        uiArgMap = JSON.parse(process.env.UI_ARGUMENTS_MAP);
+    }
+
     // Run the Python script
-    await pythonRunner.runScript(script)
+    await pythonRunner.runScript(script, uiArgMap)
         .then(
             (result) => {
                 console.log(`Final Result: ${result}`);
