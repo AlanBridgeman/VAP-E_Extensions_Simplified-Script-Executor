@@ -147,7 +147,8 @@ export class ScriptCommunicator {
                 
                 const sendLogicMessage: (message: string | Object) => Interpreter = (message: string | Object): Interpreter => { 
                     console.log(`Logic Message (response): ${JSON.stringify(message)}`); 
-                    return interpreter.send.bind(interpreter); 
+                    return interpreter.send(message);
+                    //interpreter.send.bind(interpreter); 
                 };
 
                 // Create a Responder (used to handle responses from the script)
