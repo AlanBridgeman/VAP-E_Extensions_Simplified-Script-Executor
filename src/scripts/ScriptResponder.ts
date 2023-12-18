@@ -133,7 +133,7 @@ export class ScriptResponder {
             return;
         }
         
-        console.debug('Message recieved: ' + message)
+        console.debug('Logic Message (Prompt): ' + message)
 
         // Handle the exiting message (which is the last message sent by the Python script)
         const hasExited = this.handleExitingMessage(message);
@@ -152,7 +152,7 @@ export class ScriptResponder {
             }
         }
         
-        // Add the message to the already recieved messages (logicMessages) array
+        // Add the message to the already received messages (logicMessages) array
         this.logicMessages.push(message);
     }
 }
